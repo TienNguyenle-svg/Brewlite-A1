@@ -9,6 +9,10 @@ COPY package*.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+
+# CẤP BIẾN MÔI TRƯỜNG GIẢ ĐỂ PRISMA GENERATE KHÔNG BỊ LỖI
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+
 RUN pnpm exec prisma generate
 RUN pnpm run build
 
@@ -19,7 +23,6 @@ WORKDIR /app
 RUN apk add --no-cache openssl
 RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 
-# KHÔNG cài ts-node global nữa
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
